@@ -10,5 +10,64 @@
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
     <TextView android:text="Hello World!" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:id="@+id/textView" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+        android:id="@+id/BrakeToggle"
+        android:layout_marginTop="101dp"
+        android:checked="false"
+        android:layout_below="@+id/textView"
+        android:layout_toRightOf="@+id/editText"
+        android:layout_toEndOf="@+id/editText" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+        android:id="@+id/LeftToggle"
+        android:checked="false"
+        android:layout_below="@+id/BrakeToggle"
+        android:layout_toRightOf="@+id/editText"
+        android:layout_toEndOf="@+id/editText" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brakes"
+        android:id="@+id/RightToggle"
+        android:checked="false"
+        android:layout_below="@+id/LeftToggle"
+        android:layout_toRightOf="@+id/editText2"
+        android:layout_toEndOf="@+id/editText2" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_above="@+id/LeftToggle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="Brake" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:text="Left"
+        android:layout_alignBottom="@+id/LeftToggle"
+        android:layout_alignRight="@+id/editText"
+        android:layout_alignEnd="@+id/editText" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText3"
+        android:text="Right"
+        android:layout_alignBottom="@+id/RightToggle"
+        android:layout_toLeftOf="@+id/RightToggle"
+        android:layout_toStartOf="@+id/RightToggle" />
 </RelativeLayout>
