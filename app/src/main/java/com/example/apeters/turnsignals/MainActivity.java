@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,9 @@ public class MainActivity extends Activity {
     public static BluetoothAdapter btAdapter;
     private static BluetoothServerThread serverThread;
     private static BluetoothManager runningThread;
+    private static ToggleButton brakeButton;
+    private static ToggleButton leftButton;
+    private static ToggleButton rightButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,10 @@ public class MainActivity extends Activity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+
+        brakeButton = (ToggleButton)findViewById(R.id.BrakeToggle);
+        rightButton = (ToggleButton)findViewById(R.id.RightToggle);
+        leftButton = (ToggleButton)findViewById(R.id.LeftToggle);
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter == null) {
@@ -166,10 +174,20 @@ public class MainActivity extends Activity {
         public void run(){
             Log.d("Test","run in BluetoothManager");
             while(true) {
+                byte output = 0;
+                if(brakeButton.isChecked()){
+                    output+=1;
+                    Log.d("Test","BrakeOn");
+                }
+                if(leftButton.isChecked()) output+=2;
+                if(rightButton.isChecked()) output+=4;
+                String outputStr = ""+output;
+                char str = outputStr.charAt(0);
+
                 try {
-                    byte[] output = {'2', '\n'};
-                    outputStream.write(output);
-                    Log.d("Test", "Writing 1");
+                    byte[] outputByte = {(byte)(output+48), '\n'};
+                    outputStream.write(outputByte);
+                    //Log.d("Test", "Writing "+char[0]);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
