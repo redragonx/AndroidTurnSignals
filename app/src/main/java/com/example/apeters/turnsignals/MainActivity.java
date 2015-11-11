@@ -37,18 +37,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         brakeButton = (ToggleButton)findViewById(R.id.BrakeToggle);
         rightButton = (ToggleButton)findViewById(R.id.RightToggle);
         leftButton = (ToggleButton)findViewById(R.id.LeftToggle);
@@ -174,20 +162,18 @@ public class MainActivity extends Activity {
         public void run(){
             Log.d("Test","run in BluetoothManager");
             while(true) {
+                //encode output into single byte
                 byte output = 0;
-                if(brakeButton.isChecked()){
-                    output+=1;
-                    Log.d("Test","BrakeOn");
-                }
-                if(leftButton.isChecked()) output+=2;
-                if(rightButton.isChecked()) output+=4;
-                String outputStr = ""+output;
+                if(!brakeButton.isChecked()) output+=1;
+                if(!leftButton.isChecked()) output+=2;
+                if(!rightButton.isChecked()) output+=4;
+                String outputStr = output+"\n";
                 char str = outputStr.charAt(0);
 
                 try {
                     byte[] outputByte = {(byte)(output+48), '\n'};
-                    outputStream.write(outputByte);
-                    //Log.d("Test", "Writing "+char[0]);
+                    //outputStream.write(outputByte);
+                    outputStream.write(outputStr.getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -198,6 +184,5 @@ public class MainActivity extends Activity {
                 }
             }
         }
-
     }
 }
