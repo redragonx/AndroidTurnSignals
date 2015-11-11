@@ -2,64 +2,60 @@ package com.example.apeters.turnsignals;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ToggleButton;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import static android.support.v4.app.ActivityCompat.startActivity;
-
 public class MainActivity extends Activity {
     final static int REQUEST_ENABLE_BT = 1;
-    public static BluetoothAdapter btAdapter;
-    private static BluetoothServerThread serverThread;
-    private static BluetoothManager runningThread;
-    private static ToggleButton brakeButton;
-    private static ToggleButton leftButton;
-    private static ToggleButton rightButton;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothServerThread mServerThread;
+    private static BluetoothManager sRunningThread;
+    private ToggleButton mBrakeButton;
+    private ToggleButton mLeftButton;
+    private ToggleButton mRightButton;
+    private Button mConnectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        brakeButton = (ToggleButton)findViewById(R.id.BrakeToggle);
-        rightButton = (ToggleButton)findViewById(R.id.RightToggle);
-        leftButton = (ToggleButton)findViewById(R.id.LeftToggle);
+        mBrakeButton = (ToggleButton)findViewById(R.id.BrakeToggle);
+        mRightButton = (ToggleButton)findViewById(R.id.RightToggle);
+        mLeftButton = (ToggleButton)findViewById(R.id.LeftToggle);
 
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (btAdapter == null) {
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
             //bluetooth device not found
         }
-        if (!btAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+        //TODO continue testing to make sure this works in all cases.
+        if(sRunningThread == null) {
+            mServerThread = new BluetoothServerThread();
+            mServerThread.start();
+        }
+    }
+
+    private void makeDiscoverable(){
         //Make device discoverable to jacket
         Intent discoverableIntent = new
                 Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-
-
         startActivity(discoverableIntent);
-        serverThread = new BluetoothServerThread();
-        serverThread.start();
-
-
     }
 
     @Override
@@ -87,9 +83,8 @@ public class MainActivity extends Activity {
     private void manageBTConnection(BluetoothSocket socket){
         Log.d("Test","Test");
         Log.d("BTName", socket.getRemoteDevice().getName());
-        runningThread = new BluetoothManager(socket);
-        runningThread.start();
-
+        sRunningThread = new BluetoothManager(socket);
+        sRunningThread.start();
     }
 
 //bluetooth server thread. Accepts one connection then
@@ -99,7 +94,7 @@ public class MainActivity extends Activity {
         public BluetoothServerThread() {
             BluetoothServerSocket tmp = null;
             try {
-                tmp = btAdapter.listenUsingInsecureRfcommWithServiceRecord("TurnSignals",
+                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("TurnSignals",
                         UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));   //Default UUID of Roving networks bt device
             } catch (IOException e) {
                 Log.d("Test","Test4");
@@ -148,6 +143,11 @@ public class MainActivity extends Activity {
     private class BluetoothManager extends Thread {
         private final BluetoothSocket socket;
         private final OutputStream outputStream;
+        private byte outputByte =       0b00000000;
+        private final byte brakeBit =   0b00000001;
+        private final byte leftBit =    0b00000010;
+        private final byte rightBit =   0b00000100;
+
         public BluetoothManager(BluetoothSocket socket){
             this.socket = socket;
             OutputStream tmp = null;
@@ -158,15 +158,35 @@ public class MainActivity extends Activity {
             }
             outputStream = tmp;
         }
+        //TODO may use these but also might remove to a different class
+        public void setLeftSignalOn(){
+            outputByte |= leftBit;
+        }
+        public void setLeftSignalOff(){
+            outputByte &= ~leftBit;
+        }
+        public void setRightSignalOn(){
+            outputByte |= rightBit;
+        }
+        public void setRightSignalOff(){
+            outputByte &= ~rightBit;
+        }
+        public void setBrakeSignalOn(){
+            outputByte |= brakeBit;
+        }
+        public void setBrakeSignalOff(){
+            outputByte &= ~brakeBit;
+        }
+
 
         public void run(){
             Log.d("Test","run in BluetoothManager");
             while(true) {
                 //encode output into single byte
                 byte output = 0;
-                if(!brakeButton.isChecked()) output+=1;
-                if(!leftButton.isChecked()) output+=2;
-                if(!rightButton.isChecked()) output+=4;
+                if(!mBrakeButton.isChecked()) output+=1;
+                if(!mLeftButton.isChecked()) output+=2;
+                if(!mRightButton.isChecked()) output+=4;
                 String outputStr = output+"\n";
                 char str = outputStr.charAt(0);
 
