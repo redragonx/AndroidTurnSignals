@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
@@ -33,7 +34,14 @@ public class MainActivity extends Activity {
         mBrakeButton = (ToggleButton)findViewById(R.id.BrakeToggle);
         mRightButton = (ToggleButton)findViewById(R.id.RightToggle);
         mLeftButton = (ToggleButton)findViewById(R.id.LeftToggle);
+        mConnectButton = (Button)findViewById(R.id.connect_button);
 
+        mConnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeDiscoverable();
+            }
+        });
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -54,7 +62,7 @@ public class MainActivity extends Activity {
         //Make device discoverable to jacket
         Intent discoverableIntent = new
                 Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
         startActivity(discoverableIntent);
     }
 
