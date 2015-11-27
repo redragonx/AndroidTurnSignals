@@ -52,6 +52,8 @@ public class MainJacketActivity extends FragmentActivity{
         super.onStart();
         initializeLogging();
     }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {

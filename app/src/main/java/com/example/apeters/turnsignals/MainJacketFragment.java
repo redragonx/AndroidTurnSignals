@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.Fragment;
 import android.widget.ToggleButton;
@@ -35,6 +36,9 @@ public class MainJacketFragment extends Fragment {
      */
     private static String mConnectedDeviceName = null;
 
+    private Signals mSignals;
+
+
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -44,6 +48,9 @@ public class MainJacketFragment extends Fragment {
     private ToggleButton mBrakeButton;
     private ToggleButton mLeftButton;
     private ToggleButton mRightButton;
+    private ToggleButton mLeftBlinkerToggle;
+    private ToggleButton mRightBlinkerToggle;
+
     private Button mConnectButton;
 
 
@@ -69,7 +76,7 @@ public class MainJacketFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_jacket_main, container, false);
+        return inflater.inflate(R.layout.content_main, container, false);
     }
 
 
@@ -78,7 +85,12 @@ public class MainJacketFragment extends Fragment {
         mBrakeButton = (ToggleButton) view.findViewById(R.id.BrakeToggle);
         mRightButton = (ToggleButton) view.findViewById(R.id.RightToggle);
         mLeftButton = (ToggleButton) view.findViewById(R.id.LeftToggle);
+
+        mLeftBlinkerToggle = (ToggleButton) view.findViewById(R.id.leftBlinkerToggle);
+        mRightBlinkerToggle = (ToggleButton) view.findViewById(R.id.rightBlinkerToggle);
+
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
+
 
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +105,7 @@ public class MainJacketFragment extends Fragment {
                 // Check that we're actually connected before trying anything
                 if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
                     Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+                    mBrakeButton.setChecked(false);
                     return;
                 }
                 mBluetoothServerService.write(newOutPutJacketString().getBytes());
@@ -106,6 +119,7 @@ public class MainJacketFragment extends Fragment {
                 // Check that we're actually connected before trying anything
                 if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
                     Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+                    mLeftButton.setChecked(false);
                     return;
                 }
                 mBluetoothServerService.write(newOutPutJacketString().getBytes());
@@ -118,13 +132,61 @@ public class MainJacketFragment extends Fragment {
                 // Check that we're actually connected before trying anything
                 if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
                     Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+                    mRightButton.setChecked(false);
                     return;
                 }
                 mBluetoothServerService.write(newOutPutJacketString().getBytes());
             }
         });
+
+        mLeftBlinkerToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Check that we're actually connected before trying anything
+                if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
+                    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+                    mLeftBlinkerToggle.setChecked(false);
+                    return;
+                }
+
+                if (mLeftBlinkerToggle.isChecked()) {
+                    startLeftBlinker();
+                }
+                else {
+                    mSignals.cancelBlinker();
+                }
+            }
+        });
+
+        mRightBlinkerToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Check that we're actually connected before trying anything
+                if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
+                    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+                    mRightBlinkerToggle.setChecked(false);
+                    return;
+                }
+
+                if (mRightBlinkerToggle.isChecked()) {
+                    startRightBlinker();
+                }
+                else {
+                    mSignals.cancelBlinker();
+                }
+            }
+        });
     }
 
+    private void startRightBlinker() {
+        // mSignals.setLeftOff();
+        mSignals.setRightOn();
+    }
+
+    private void startLeftBlinker() {
+       // mSignals.setRightOff();
+        mSignals.setLeftOn();
+    }
     private String newOutPutJacketString() {
         //encode output into single byte
         byte output = 0;
@@ -189,6 +251,16 @@ public class MainJacketFragment extends Fragment {
     }
 
     @Override
+    public void onPause()  {
+        super.onPause();
+
+        if (mBluetoothServerService.getState() == BluetoothServer.STATE_CONNECTED) {
+            mBluetoothServerService.stop();
+        }
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -232,6 +304,8 @@ public class MainJacketFragment extends Fragment {
             return;
         }
         actionBar.setSubtitle(resId);
+        TextView txtViewDeviceName = (TextView)activity.findViewById(R.id.txtViewDeviceName);
+        txtViewDeviceName.setText(resId);
     }
 
     /**
@@ -249,6 +323,8 @@ public class MainJacketFragment extends Fragment {
             return;
         }
         actionBar.setSubtitle(subTitle);
+        TextView txtViewDeviceName = (TextView)activity.findViewById(R.id.txtViewDeviceName);
+        txtViewDeviceName.setText(subTitle);
     }
 
     /**
@@ -263,7 +339,8 @@ public class MainJacketFragment extends Fragment {
                     switch (msg.arg1) {
                         case BluetoothServer.STATE_CONNECTED:
                             if(activity != null) {
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                                setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                                mSignals = new Signals(mBluetoothServerService);
                         }
                             break;
                         case BluetoothServer.STATE_CONNECTING:
@@ -291,6 +368,7 @@ public class MainJacketFragment extends Fragment {
                     if (null != activity) {
                         Toast.makeText(activity, "Connected to "
                                 + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                        setStatus(mConnectedDeviceName);
                     }
                     break;
                 case Constants.MESSAGE_TOAST:

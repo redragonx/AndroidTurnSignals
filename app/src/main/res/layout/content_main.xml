@@ -74,4 +74,32 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="41dp"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/txtViewDeviceName"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/connect_button"
+        android:layout_alignStart="@+id/connect_button" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/leftBlinkerToggle"
+        android:layout_above="@+id/LeftToggle"
+        android:layout_toRightOf="@+id/txtViewDeviceName"
+        android:layout_toEndOf="@+id/txtViewDeviceName" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/rightBlinkerToggle"
+        android:layout_above="@+id/editText3"
+        android:layout_alignLeft="@+id/leftBlinkerToggle"
+        android:layout_alignStart="@+id/leftBlinkerToggle" />
 </RelativeLayout>

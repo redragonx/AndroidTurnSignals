@@ -109,10 +109,6 @@ public class BluetoothServer {
         setState(STATE_LISTEN);
 
         // Start the thread to listen on a BluetoothServerSocket
-        if (mSecureAcceptThread == null) {
-            mSecureAcceptThread = new AcceptThread(true);
-            mSecureAcceptThread.start();
-        }
         if (mInsecureAcceptThread == null) {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
@@ -170,11 +166,6 @@ public class BluetoothServer {
             mConnectedThread = null;
         }
 
-        // Cancel the accept thread because we only want to connect to one device
-        if (mSecureAcceptThread != null) {
-            mSecureAcceptThread.cancel();
-            mSecureAcceptThread = null;
-        }
         if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
@@ -329,12 +320,6 @@ public class BluetoothServer {
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:
-                                // Either not ready or already connected. Terminate new socket.
-                                try {
-                                    socket.close();
-                                } catch (IOException e) {
-                                    Log.e(TAG, "Could not close unwanted socket", e);
-                                }
                                 break;
                         }
                     }
@@ -459,7 +444,6 @@ public class BluetoothServer {
             Log.i(TAG, "BEGIN mConnectedThread");
             byte[] buffer = new byte[1024];
             int bytes;
-
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
