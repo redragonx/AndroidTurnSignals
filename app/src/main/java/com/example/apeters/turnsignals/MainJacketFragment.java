@@ -28,7 +28,6 @@ import android.widget.ToggleButton;
  */
 public class MainJacketFragment extends Fragment {
 
-
     private static final String TAG = "BluetoothJacketFragment";
 
     /**
@@ -52,7 +51,6 @@ public class MainJacketFragment extends Fragment {
     private ToggleButton mRightBlinkerToggle;
 
     private Button mConnectButton;
-
 
     private BluetoothAdapter mBluetoothAdapter = null;
 
@@ -90,7 +88,6 @@ public class MainJacketFragment extends Fragment {
         mRightBlinkerToggle = (ToggleButton) view.findViewById(R.id.rightBlinkerToggle);
 
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
-
 
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,10 +147,10 @@ public class MainJacketFragment extends Fragment {
                 }
 
                 if (mLeftBlinkerToggle.isChecked()) {
-                    startLeftBlinker();
+                    mSignals.setLeftOn();
                 }
                 else {
-                    mSignals.cancelBlinker();
+                    mSignals.setLeftOff();
                 }
             }
         });
@@ -169,10 +166,10 @@ public class MainJacketFragment extends Fragment {
                 }
 
                 if (mRightBlinkerToggle.isChecked()) {
-                    startRightBlinker();
+                    mSignals.setRightOn();
                 }
                 else {
-                    mSignals.cancelBlinker();
+                    mSignals.setRightOff();
                 }
             }
         });

@@ -49,8 +49,11 @@ public class Signals {
     }
 
     public void setRightOff(){
-        cancelBlinker();
+        if(!mLeftOn) {
+            cancelBlinker();
+        }
         mRightOn = false;
+        outputToDevice();
     }
 
     public boolean getRightSignal(){
@@ -63,38 +66,31 @@ public class Signals {
     }
 
     public void setLeftOff(){
-        cancelBlinker();
+        if(!mRightOn) {
+            cancelBlinker();
+        }
         mLeftOn = false;
+        outputToDevice();
     }
 
     public boolean getLeftSignal(){
         return mLeftOn && flash;
     }
 
-
     public void startBlinker(){
         if(mTimerRunning) return;
 
         mTimerRunning = true;
 
-        if (mTimerCancel) {
-            mFlashTimer = new Timer();
-            mTimerCancel = false;
-        }
+        //if (mTimerCancel) {
+        mFlashTimer = new Timer();
+        //    mTimerCancel = false;
+        //}
         mFlashTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-
                 flash = !flash;
-
-
-                String blinkerOutputString = blinkerString();
-
-                Log.d("timer", "Blinker: " + blinkerOutputString);
-
-                // mBluetoothServerService.write("0\n".getBytes());
-                mBluetoothServerService.write(blinkerOutputString.getBytes());
-
+                outputToDevice();
             }
             // start immediately and every 0.5 secs
         }, 0, mOnTime);
@@ -111,17 +107,23 @@ public class Signals {
         return outputStr;
     }
 
+    private void outputToDevice(){
+        String blinkerOutputString = blinkerString();
+
+        Log.d("timer", "Blinker: " + blinkerOutputString);
+
+        // mBluetoothServerService.write("0\n".getBytes());
+        mBluetoothServerService.write(blinkerOutputString.getBytes());
+    }
+
     public void cancelBlinker() {
         if (mTimerRunning) {
             mFlashTimer.cancel();
             mFlashTimer = null;
-
-            if(flash) flash = false;
-
+            flash = false;
             // reset lights to left
-            mBluetoothServerService.write("0".getBytes());
+            mBluetoothServerService.write("0\n".getBytes());
             mTimerRunning = false;
-            mTimerCancel = true;
         }
     }
 
