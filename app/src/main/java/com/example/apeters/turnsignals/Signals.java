@@ -17,7 +17,6 @@ public class Signals {
     private Timer mFlashTimer;
     private BluetoothServer mBluetoothServerService;
     private boolean mTimerRunning;
-    private boolean mTimerCancel;
 
     private boolean flash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
@@ -31,7 +30,6 @@ public class Signals {
         this.mBrakeOn = brakeOn;
         this.mLeftOn = leftOn;
         this.mRightOn = rightOn;
-        this.mTimerCancel = false;
 
         mFlashTimer = new Timer();
         if(mLeftOn || mRightOn){
@@ -41,6 +39,14 @@ public class Signals {
 
     public boolean getTimerRunning() {
         return mTimerRunning;
+    }
+
+    public void setBrakeOn(){
+        mBrakeOn = true;
+    }
+
+    public void setBrakeOff(){
+        mBrakeOn = false;
     }
 
     public void setRightOn(){
@@ -107,12 +113,9 @@ public class Signals {
         return outputStr;
     }
 
-    private void outputToDevice(){
+    public void outputToDevice(){
         String blinkerOutputString = blinkerString();
-
         Log.d("timer", "Blinker: " + blinkerOutputString);
-
-        // mBluetoothServerService.write("0\n".getBytes());
         mBluetoothServerService.write(blinkerOutputString.getBytes());
     }
 
@@ -121,8 +124,6 @@ public class Signals {
             mFlashTimer.cancel();
             mFlashTimer = null;
             flash = false;
-            // reset lights to left
-            mBluetoothServerService.write("0\n".getBytes());
             mTimerRunning = false;
         }
     }

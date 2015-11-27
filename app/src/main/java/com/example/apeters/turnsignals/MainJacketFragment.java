@@ -105,7 +105,13 @@ public class MainJacketFragment extends Fragment {
                     mBrakeButton.setChecked(false);
                     return;
                 }
-                mBluetoothServerService.write(newOutPutJacketString().getBytes());
+                if(mBrakeButton.isChecked()){
+                    mSignals.setBrakeOn();
+                }else{
+                    mSignals.setBrakeOff();
+                }
+                mSignals.outputToDevice();
+
             }
 
         });

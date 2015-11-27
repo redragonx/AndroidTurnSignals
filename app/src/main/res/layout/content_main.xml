@@ -46,7 +46,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:text="Brake"
-        android:editable="false" />
+        android:editable="false"
+        android:clickable="false"
+        android:contextClickable="false" />
 
     <EditText
         android:layout_width="wrap_content"
