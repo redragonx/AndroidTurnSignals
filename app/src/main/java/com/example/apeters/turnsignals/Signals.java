@@ -17,7 +17,6 @@ public class Signals {
     private Timer mFlashTimer;
     private BluetoothServer mBluetoothServerService;
     private boolean mTimerRunning;
-    private boolean mTimerCancel;
 
     private boolean flash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
@@ -31,7 +30,6 @@ public class Signals {
         this.mBrakeOn = brakeOn;
         this.mLeftOn = leftOn;
         this.mRightOn = rightOn;
-        this.mTimerCancel = false;
 
         mFlashTimer = new Timer();
         if(mLeftOn || mRightOn){
@@ -43,14 +41,25 @@ public class Signals {
         return mTimerRunning;
     }
 
+    public void setBrakeOn(){
+        mBrakeOn = true;
+    }
+
+    public void setBrakeOff(){
+        mBrakeOn = false;
+    }
+
     public void setRightOn(){
         mRightOn = true;
         startBlinker();
     }
 
     public void setRightOff(){
-        cancelBlinker();
+        if(!mLeftOn) {
+            cancelBlinker();
+        }
         mRightOn = false;
+        outputToDevice();
     }
 
     public boolean getRightSignal(){
@@ -63,38 +72,31 @@ public class Signals {
     }
 
     public void setLeftOff(){
-        cancelBlinker();
+        if(!mRightOn) {
+            cancelBlinker();
+        }
         mLeftOn = false;
+        outputToDevice();
     }
 
     public boolean getLeftSignal(){
         return mLeftOn && flash;
     }
 
-
     public void startBlinker(){
         if(mTimerRunning) return;
 
         mTimerRunning = true;
 
-        if (mTimerCancel) {
-            mFlashTimer = new Timer();
-            mTimerCancel = false;
-        }
+        //if (mTimerCancel) {
+        mFlashTimer = new Timer();
+        //    mTimerCancel = false;
+        //}
         mFlashTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-
                 flash = !flash;
-
-
-                String blinkerOutputString = blinkerString();
-
-                Log.d("timer", "Blinker: " + blinkerOutputString);
-
-                // mBluetoothServerService.write("0\n".getBytes());
-                mBluetoothServerService.write(blinkerOutputString.getBytes());
-
+                outputToDevice();
             }
             // start immediately and every 0.5 secs
         }, 0, mOnTime);
@@ -111,17 +113,18 @@ public class Signals {
         return outputStr;
     }
 
+    public void outputToDevice(){
+        String blinkerOutputString = blinkerString();
+        Log.d("timer", "Blinker: " + blinkerOutputString);
+        mBluetoothServerService.write(blinkerOutputString.getBytes());
+    }
+
     public void cancelBlinker() {
         if (mTimerRunning) {
             mFlashTimer.cancel();
             mFlashTimer = null;
-
-            if(flash) flash = false;
-
-            // reset lights to left
-            mBluetoothServerService.write("0".getBytes());
+            flash = false;
             mTimerRunning = false;
-            mTimerCancel = true;
         }
     }
 

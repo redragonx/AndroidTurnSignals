@@ -45,7 +45,10 @@
         android:layout_above="@+id/LeftToggle"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="Brake" />
+        android:text="Brake"
+        android:editable="false"
+        android:clickable="false"
+        android:contextClickable="false" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -54,7 +57,8 @@
         android:text="Left"
         android:layout_alignBottom="@+id/LeftToggle"
         android:layout_alignRight="@+id/editText"
-        android:layout_alignEnd="@+id/editText" />
+        android:layout_alignEnd="@+id/editText"
+        android:editable="false" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -63,7 +67,8 @@
         android:text="Right"
         android:layout_alignBottom="@+id/RightToggle"
         android:layout_toLeftOf="@+id/RightToggle"
-        android:layout_toStartOf="@+id/RightToggle" />
+        android:layout_toStartOf="@+id/RightToggle"
+        android:editable="false" />
 
     <Button
         android:layout_width="wrap_content"
