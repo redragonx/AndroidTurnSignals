@@ -37,8 +37,6 @@ public class MainJacketFragment extends Fragment {
 
     private Signals mSignals;
 
-
-
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
@@ -100,6 +98,8 @@ public class MainJacketFragment extends Fragment {
                     mBrakeButton.setChecked(false);
                     return;
                 }
+
+
                 if(mBrakeButton.isChecked()){
                     mSignals.setBrakeOn();
                 }else{
@@ -151,6 +151,10 @@ public class MainJacketFragment extends Fragment {
 
     }
 
+    private void isBluetoothConnected(){
+
+    }
+
     private void startRightBlinker() {
         // mSignals.setLeftOff();
         mSignals.setRightOn();
@@ -160,7 +164,7 @@ public class MainJacketFragment extends Fragment {
        // mSignals.setRightOff();
         mSignals.setLeftOn();
     }
-    
+
 
     @Override
     public void onStart() {
