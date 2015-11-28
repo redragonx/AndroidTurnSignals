@@ -47,8 +47,6 @@ public class MainJacketFragment extends Fragment {
     private ToggleButton mBrakeButton;
     private ToggleButton mLeftButton;
     private ToggleButton mRightButton;
-    private ToggleButton mLeftBlinkerToggle;
-    private ToggleButton mRightBlinkerToggle;
 
     private Button mConnectButton;
 
@@ -83,9 +81,6 @@ public class MainJacketFragment extends Fragment {
         mBrakeButton = (ToggleButton) view.findViewById(R.id.BrakeToggle);
         mRightButton = (ToggleButton) view.findViewById(R.id.RightToggle);
         mLeftButton = (ToggleButton) view.findViewById(R.id.LeftToggle);
-
-        mLeftBlinkerToggle = (ToggleButton) view.findViewById(R.id.leftBlinkerToggle);
-        mRightBlinkerToggle = (ToggleButton) view.findViewById(R.id.rightBlinkerToggle);
 
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
 
@@ -125,7 +120,13 @@ public class MainJacketFragment extends Fragment {
                     mLeftButton.setChecked(false);
                     return;
                 }
-                mBluetoothServerService.write(newOutPutJacketString().getBytes());
+
+                if (mLeftButton.isChecked()) {
+                    mSignals.setLeftOn();
+                }
+                else {
+                    mSignals.setLeftOff();
+                }
             }
         });
 
@@ -138,47 +139,16 @@ public class MainJacketFragment extends Fragment {
                     mRightButton.setChecked(false);
                     return;
                 }
-                mBluetoothServerService.write(newOutPutJacketString().getBytes());
-            }
-        });
 
-        mLeftBlinkerToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Check that we're actually connected before trying anything
-                if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
-                    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-                    mLeftBlinkerToggle.setChecked(false);
-                    return;
-                }
-
-                if (mLeftBlinkerToggle.isChecked()) {
-                    mSignals.setLeftOn();
-                }
-                else {
-                    mSignals.setLeftOff();
-                }
-            }
-        });
-
-        mRightBlinkerToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Check that we're actually connected before trying anything
-                if (mBluetoothServerService.getState() != BluetoothServer.STATE_CONNECTED) {
-                    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-                    mRightBlinkerToggle.setChecked(false);
-                    return;
-                }
-
-                if (mRightBlinkerToggle.isChecked()) {
+                if (mRightButton.isChecked()) {
                     mSignals.setRightOn();
-                }
-                else {
+                } else {
                     mSignals.setRightOff();
                 }
             }
         });
+
+
     }
 
     private void startRightBlinker() {
@@ -190,16 +160,7 @@ public class MainJacketFragment extends Fragment {
        // mSignals.setRightOff();
         mSignals.setLeftOn();
     }
-    private String newOutPutJacketString() {
-        //encode output into single byte
-        byte output = 0;
-        if (!mBrakeButton.isChecked()) output += 1;
-        if (!mLeftButton.isChecked()) output += 2;
-        if (!mRightButton.isChecked()) output += 4;
-        String outputStr = output + "\n";
-
-        return outputStr;
-    }
+    
 
     @Override
     public void onStart() {
