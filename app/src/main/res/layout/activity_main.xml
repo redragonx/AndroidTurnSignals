@@ -20,21 +20,8 @@
       android:layout_height="match_parent"
       android:id="@+id/sample_main_layout">
 
-    <ViewAnimator
-          android:id="@+id/sample_output"
-          android:layout_width="match_parent"
-          android:layout_height="0px"
-          android:layout_weight="1">
-
-        <fragment
-              android:name="com.example.apeters.turnsignals.logger.LogFragment"
-              android:id="@+id/log_fragment"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent" />
-
-    </ViewAnimator>
     <FrameLayout
-        android:id="@+id/sample_content_fragment"
+        android:id="@+id/Main_Fragment"
         android:layout_weight="2"
         android:layout_width="match_parent"
         android:layout_height="0px" />

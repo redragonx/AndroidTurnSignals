@@ -13,10 +13,13 @@ public class Signals {
     private boolean mLeftOn = false;
     private boolean mRightOn = false;
     private int mOnTime = 500;
-    private int mOffTime = 500;
+    private int mOffTime = 200;
     private Timer mFlashTimer;
     private BluetoothServer mBluetoothServerService;
     private boolean mTimerRunning;
+
+
+
 
     private boolean flash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
@@ -83,24 +86,30 @@ public class Signals {
         return mLeftOn && flash;
     }
 
+    public void setFlashTimes(int onMillis, int offMillis){
+        mOnTime = onMillis;
+        mOffTime = offMillis;
+    }
+
     public void startBlinker(){
         if(mTimerRunning) return;
-
         mTimerRunning = true;
-
-        //if (mTimerCancel) {
         mFlashTimer = new Timer();
-        //    mTimerCancel = false;
-        //}
-        mFlashTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                flash = !flash;
-                outputToDevice();
-            }
-            // start immediately and every 0.5 secs
-        }, 0, mOnTime);
+        mFlashTimer.schedule(new FlashTimer(),mOnTime);
     }
+
+    private class FlashTimer extends TimerTask {
+        @Override
+        public void run() {
+            Log.d("Timer", "TimerRun");
+            int time = flash ? mOffTime : mOnTime;
+            flash = !flash;
+            outputToDevice();
+            mFlashTimer = new Timer();
+            mFlashTimer.schedule(new FlashTimer(),time);
+        }
+    }
+
 
     private String blinkerString() {
         //encode output into single byte
@@ -129,3 +138,5 @@ public class Signals {
     }
 
 }
+
+
