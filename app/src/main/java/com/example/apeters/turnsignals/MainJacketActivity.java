@@ -1,18 +1,22 @@
 package com.example.apeters.turnsignals;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.apeters.turnsignals.logger.*;
+import android.util.Log;
 
 /**
  * Created by stephen on 11/14/15.
  */
 public class MainJacketActivity extends FragmentActivity{
-
 
     public static final String TAG = "MainActivity";
 
@@ -21,6 +25,16 @@ public class MainJacketActivity extends FragmentActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+        Intent intent = new Intent(this, SignalService.class);
+        startService(intent);
+
+
+//        Intent intent2 = new Intent(this, SignalService.class);
+//        getApplicationContext().bindService(intent2, mConnection, Context.BIND_AUTO_CREATE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -37,56 +51,35 @@ public class MainJacketActivity extends FragmentActivity{
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-//        MenuItem logToggle = menu.findItem(R.id.menu_toggle_log);
-//        logToggle.setVisible(findViewById(R.id.sample_output) instanceof ViewAnimator);
-//        logToggle.setTitle(mLogShown ? R.string.hide_log : R.string.show_log);
-
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //initializeLogging();
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()) {
-//            case R.id.menu_toggle_log:
-//                mLogShown = !mLogShown;
-//                ViewAnimator output = (ViewAnimator) findViewById(R.id.sample_output);
-//                if (mLogShown) {
-//                    output.setDisplayedChild(1);
-//                } else {
-//                    output.setDisplayedChild(0);
-//                }
-//                supportInvalidateOptionsMenu();
-//                return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 
-    /** Create a chain of targets that will receive log data */
-    public void initializeLogging() {
-        // Wraps Android's native log framework.
-//        LogWrapper logWrapper = new LogWrapper();
-//        // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
-//        Log.setLogNode(logWrapper);
+//    private ServiceConnection mConnection = new ServiceConnection() {
 //
-//        // Filter strips out everything except the message text.
-//        MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
-//        logWrapper.setNext(msgFilter);
+//        @Override
+//        public void onServiceConnected(ComponentName className, IBinder service) {
+//            Log.d("Service","Bound2");
+//            // We've bound to LocalService, cast the IBinder and get LocalService instance
 //
-//        // On screen logging via a fragment with a TextView.
-//        LogFragment logFragment = (LogFragment) getSupportFragmentManager()
-//       //         .findFragmentById(R.id.log_fragment);
-//        msgFilter.setNext(logFragment.getLogView());
+//        }
 //
-//        Log.i(TAG, "Ready");
-    }
+//        @Override
+//        public void onServiceDisconnected(ComponentName arg0) {
+//
+//        }
+//    };
+
 }
