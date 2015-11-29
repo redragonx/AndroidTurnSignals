@@ -15,7 +15,7 @@ public class GyroscopeSensor implements SensorEventListener {
     private Sensor mSensor;
     private Signals mSignals;
 
-    float quantum = 0.50f,
+    private float quantum = 0.50f,
             xt = 0.0f,
             yt = 0.0f,
             zt = 0.0f;
