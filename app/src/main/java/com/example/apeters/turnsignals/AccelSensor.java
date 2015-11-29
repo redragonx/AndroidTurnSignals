@@ -37,8 +37,7 @@ public class AccelSensor implements SensorEventListener {
             // Use the accelerometer.
             if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
                 mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            }
-            else{
+            }else{
                 // Sorry, there are no accelerometers on your device.
                 // You can't use this app.
             }

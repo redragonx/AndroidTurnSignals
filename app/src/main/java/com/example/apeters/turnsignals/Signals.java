@@ -64,6 +64,7 @@ public class Signals {
     public void setRightOn(){
         mRightOn = true;
         startBlinker();
+        outputToDevice();
     }
 
     public void setRightOff(){
@@ -81,6 +82,7 @@ public class Signals {
     public void setLeftOn(){
         mLeftOn = true;
         startBlinker();
+        outputToDevice();
     }
 
     public void setLeftOff(){
@@ -104,6 +106,7 @@ public class Signals {
         if(mTimerRunning) return;
         mTimerRunning = true;
         mFlashTimer = new Timer();
+        flash = true;
         mFlashTimer.schedule(new FlashTimer(),mOnTime);
     }
 

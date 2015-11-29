@@ -93,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Use Gyro For Turn Signals"
-        android:id="@+id/switch1"
+        android:id="@+id/gyro_switch"
         android:checked="false"
         android:layout_below="@+id/RightToggle"
         android:layout_alignRight="@+id/RightToggle"
@@ -103,10 +103,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Use Accelerometer For Brake"
-        android:id="@+id/switch2"
+        android:id="@+id/accelerometer_switch"
         android:checked="false"
-        android:layout_below="@+id/switch1"
-        android:layout_alignRight="@+id/switch1"
-        android:layout_alignEnd="@+id/switch1" />
+        android:layout_below="@id/gyro_switch"
+        android:layout_alignRight="@id/gyro_switch"
+        android:layout_alignEnd="@id/gyro_switch" />
 
 </RelativeLayout>

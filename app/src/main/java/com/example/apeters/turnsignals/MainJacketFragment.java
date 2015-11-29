@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.Fragment;
@@ -46,6 +48,9 @@ public class MainJacketFragment extends Fragment {
     private ToggleButton mBrakeButton;
     private ToggleButton mLeftButton;
     private ToggleButton mRightButton;
+
+    private Switch mGyroSwitch;
+    private Switch mAcclSwitch;
 
     private Button mConnectButton;
 
@@ -87,6 +92,9 @@ public class MainJacketFragment extends Fragment {
         mRightButton = (ToggleButton) view.findViewById(R.id.RightToggle);
         mLeftButton = (ToggleButton) view.findViewById(R.id.LeftToggle);
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
+        mGyroSwitch = (Switch) view.findViewById(R.id.gyro_switch);
+        mAcclSwitch = (Switch) view.findViewById(R.id.accelerometer_switch);
+
         // Bind to LocalService
         Intent intent = new Intent(getActivity(), SignalService.class);
         getActivity().getApplication().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -136,6 +144,25 @@ public class MainJacketFragment extends Fragment {
                 }
             }
         });
+
+        mGyroSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    mSignalService.useGyro();
+                    mLeftButton.setEnabled(false);
+                    mLeftButton.setClickable(false);
+                    mRightButton.setEnabled(false);
+                    mRightButton.setClickable(false);
+                }else{
+                    mSignalService.disableGyro();
+                    mLeftButton.setEnabled(true);
+                    mLeftButton.setClickable(true);
+                    mRightButton.setEnabled(true);
+                    mRightButton.setClickable(true);
+                }
+            }
+        });
     }
 
 
@@ -150,9 +177,6 @@ public class MainJacketFragment extends Fragment {
             // Otherwise, setup the server session
         }
     }
-
-
-
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {

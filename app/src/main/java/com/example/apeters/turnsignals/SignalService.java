@@ -14,6 +14,8 @@ public class SignalService extends Service {
 
     private Signals mSignals;
 
+    private GyroscopeSensor mGyroSensor;
+
     private final IBinder mBinder = new LocalBinder();
 
     public class LocalBinder extends Binder {
@@ -41,5 +43,20 @@ public class SignalService extends Service {
         Log.d("Service", "Binder Called");
 
         return mBinder;
+    }
+
+    public void useGyro(){
+        Log.d("SensorService","Starting Gyro");
+        if(mGyroSensor == null){
+            mGyroSensor = new GyroscopeSensor(getApplicationContext(), mSignals);
+        }
+    }
+
+    public void disableGyro(){
+        Log.d("SensorService","Stopping Gyro");
+        if(mGyroSensor != null){
+            mGyroSensor.cancel();
+            mGyroSensor = null;
+        }
     }
 }
