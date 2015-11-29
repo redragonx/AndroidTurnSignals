@@ -19,13 +19,22 @@ public class Signals {
     private boolean mTimerRunning;
 
 
-
-
     private boolean flash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
+    public Signals(){
+        this(null);
+    }
 
     public Signals(BluetoothServer server){
         this(server, false, false, false);
+    }
+
+    public void setBluetoothServerService(BluetoothServer server){
+        mBluetoothServerService = server;
+    }
+
+    public BluetoothServer getBluetoothServerService(){
+        return mBluetoothServerService;
     }
 
     public Signals(BluetoothServer server, boolean brakeOn, boolean leftOn, boolean rightOn){
@@ -123,6 +132,9 @@ public class Signals {
     }
 
     public void outputToDevice(){
+        if(mBluetoothServerService == null){
+            return;
+        }
         String blinkerOutputString = blinkerString();
         Log.d("timer", "Blinker: " + blinkerOutputString);
         mBluetoothServerService.write(blinkerOutputString.getBytes());

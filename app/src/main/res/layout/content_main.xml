@@ -89,21 +89,14 @@
         android:layout_alignLeft="@+id/connect_button"
         android:layout_alignStart="@+id/connect_button" />
 
-    <ToggleButton
+    <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/leftBlinkerToggle"
-        android:layout_above="@+id/LeftToggle"
-        android:layout_toRightOf="@+id/txtViewDeviceName"
-        android:layout_toEndOf="@+id/txtViewDeviceName" />
+        android:text="Gyro"
+        android:id="@+id/switch1"
+        android:checked="false"
+        android:layout_below="@+id/RightToggle"
+        android:layout_alignRight="@+id/RightToggle"
+        android:layout_alignEnd="@+id/RightToggle" />
 
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/rightBlinkerToggle"
-        android:layout_above="@+id/editText3"
-        android:layout_alignLeft="@+id/leftBlinkerToggle"
-        android:layout_alignStart="@+id/leftBlinkerToggle" />
 </RelativeLayout>
