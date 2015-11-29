@@ -17,9 +17,9 @@ public class Signals {
     private Timer mFlashTimer;
     private BluetoothServer mBluetoothServerService;
     private boolean mTimerRunning;
+    private SignalUpdateListener mSignalUpdateListener;
 
-
-    private boolean flash = false; //Set by timers on when the first signal is set. Both signals
+    private boolean mFlash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
     public Signals(){
         this(null);
@@ -51,11 +51,13 @@ public class Signals {
 
     public void setBrakeOn(){
         mBrakeOn = true;
+        updateBrake();
         outputToDevice();
     }
 
     public void setBrakeOff(){
         mBrakeOn = false;
+        updateBrake();
         outputToDevice();
     }
 
@@ -66,6 +68,7 @@ public class Signals {
     public void setRightOn(){
         mRightOn = true;
         startBlinker();
+        updateRight();
         outputToDevice();
     }
 
@@ -74,6 +77,7 @@ public class Signals {
             cancelBlinker();
         }
         mRightOn = false;
+        updateRight();
         outputToDevice();
     }
 
@@ -83,12 +87,13 @@ public class Signals {
 
     //Return the current lit state
     public boolean getRightSignal(){
-        return mRightOn && flash;
+        return mRightOn && mFlash;
     }
 
     public void setLeftOn(){
         mLeftOn = true;
         startBlinker();
+        updateLeft();
         outputToDevice();
     }
 
@@ -97,6 +102,7 @@ public class Signals {
             cancelBlinker();
         }
         mLeftOn = false;
+        updateLeft();
         outputToDevice();
     }
 
@@ -106,7 +112,7 @@ public class Signals {
 
     //Return the current lit state
     public boolean getLeftSignal(){
-        return mLeftOn && flash;
+        return mLeftOn && mFlash;
     }
 
     public void setFlashTimes(int onMillis, int offMillis){
@@ -118,7 +124,7 @@ public class Signals {
         if(mTimerRunning) return;
         mTimerRunning = true;
         mFlashTimer = new Timer();
-        flash = true;
+        mFlash = true;
         mFlashTimer.schedule(new FlashTimer(),mOnTime);
     }
 
@@ -126,8 +132,8 @@ public class Signals {
         @Override
         public void run() {
             Log.d("Timer", "TimerRun");
-            int time = flash ? mOffTime : mOnTime;
-            flash = !flash;
+            int time = mFlash ? mOffTime : mOnTime;
+            mFlash = !mFlash;
             outputToDevice();
             mFlashTimer = new Timer();
             mFlashTimer.schedule(new FlashTimer(),time);
@@ -159,9 +165,47 @@ public class Signals {
         if (mTimerRunning) {
             mFlashTimer.cancel();
             mFlashTimer = null;
-            flash = false;
+            mFlash = false;
             mTimerRunning = false;
         }
+    }
+
+    public void setSignalUpdateListener(SignalUpdateListener listener){
+        this.mSignalUpdateListener = listener;
+    }
+
+    private void updateBrake(){
+        if(mSignalUpdateListener != null){
+            mSignalUpdateListener.brakeUpdate(mBrakeOn);
+        }
+    }
+    private void updateLeft(){
+        if(mSignalUpdateListener != null){
+            mSignalUpdateListener.leftUpdate(mLeftOn);
+        }
+    }
+    private void updateRight(){
+        if(mSignalUpdateListener != null){
+            mSignalUpdateListener.rightUpdate(mRightOn);
+        }
+    }
+    private void updateLeftSignal(){
+        if(mSignalUpdateListener != null){
+            mSignalUpdateListener.leftSignalUpdate(mLeftOn && mFlash);
+        }
+    }
+    private void updateRightSignal(){
+        if(mSignalUpdateListener != null){
+            mSignalUpdateListener.rightSignalUpdate(mRightOn && mFlash);
+        }
+    }
+
+    public interface SignalUpdateListener {
+        void brakeUpdate(boolean brakeIsOn);
+        void leftUpdate(boolean leftIsOn);
+        void rightUpdate(boolean rightIsOn);
+        void leftSignalUpdate(boolean leftSignalIsOn);
+        void rightSignalUpdate(boolean rightSignal);
     }
 
 }
