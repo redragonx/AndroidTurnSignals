@@ -42,31 +42,4 @@ public class SignalService extends Service {
 
         return mBinder;
     }
-
-    public void start(BluetoothServer BTServer){
-        mSignals.setBluetoothServerService(BTServer);
-    }
-
-    public void setBrakeOn(){
-        mSignals.setBrakeOn();
-    }
-    public void setBrakeOff(){
-        mSignals.setBrakeOff();
-    }
-
-    public void setLeftOn(){
-        mSignals.setLeftOn();
-    }
-
-    public void setLeftOff(){
-        mSignals.setLeftOff();
-    }
-
-    public void setRightOn(){
-        mSignals.setRightOn();
-    }
-
-    public void setRightOff(){
-        mSignals.setRightOff();
-    }
 }
