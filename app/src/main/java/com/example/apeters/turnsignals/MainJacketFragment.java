@@ -1,7 +1,5 @@
 package com.example.apeters.turnsignals;
 
-
-import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -30,8 +28,8 @@ import android.widget.ToggleButton;
 /**
  * Created by stephen on 11/14/15.
  */
-public class MainJacketFragment extends Fragment {
 
+public class MainJacketFragment extends Fragment {
     private static final String TAG = "BluetoothJacketFragment";
     /**
      * Name of the connected device
@@ -324,8 +322,8 @@ public class MainJacketFragment extends Fragment {
             case REQUEST_ENABLE_BT:
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a jacket session
-                    //setupServer();   //Testing. Would Rather only use if button is pressed.
+                    Log.d(TAG,"Bluetooth Enabled");
+                    //Bluetooth is now enabled, so set up a jacket session
                 } else {
                     // User did not enable Bluetooth or an error occurred
                     Log.d(TAG, "BT not enabled");
