@@ -135,6 +135,8 @@ public class Signals {
             int time = mFlash ? mOffTime : mOnTime;
             mFlash = !mFlash;
             outputToDevice();
+            updateLeftSignal();
+            updateRightSignal();
             mFlashTimer = new Timer();
             mFlashTimer.schedule(new FlashTimer(),time);
         }
@@ -167,6 +169,8 @@ public class Signals {
             mFlashTimer = null;
             mFlash = false;
             mTimerRunning = false;
+            updateLeftSignal();
+            updateRightSignal();
         }
     }
 
@@ -205,7 +209,7 @@ public class Signals {
         void leftUpdate(boolean leftIsOn);
         void rightUpdate(boolean rightIsOn);
         void leftSignalUpdate(boolean leftSignalIsOn);
-        void rightSignalUpdate(boolean rightSignal);
+        void rightSignalUpdate(boolean rightSignalIsOn);
     }
 
 }

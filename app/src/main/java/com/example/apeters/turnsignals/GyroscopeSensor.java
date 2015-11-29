@@ -29,10 +29,10 @@ public class GyroscopeSensor implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        xt += event.values[0]*quantum;
-        yt += event.values[1]*quantum;
-        zt += event.values[2]*quantum;
-        Log.d("Gyro", "Sensor Chamged: "+yt);
+        if(event.values[0] > quantum || event.values[0] < quantum*-1) xt += event.values[0];
+        if(event.values[1] > quantum || event.values[1] < quantum*-1) yt += event.values[1];
+        if(event.values[2] > quantum || event.values[2] < quantum*-1) zt += event.values[2];
+        Log.d("Gyro", "Sensor Changed: "+yt);
         if(yt < -3){
             Log.d("Gyro", "Left On");
             mSignals.setLeftOn();
