@@ -166,6 +166,11 @@ public class BluetoothServer {
             mConnectedThread = null;
         }
 
+        if(mSecureAcceptThread != null) {
+            mSecureAcceptThread.cancel();
+            mSecureAcceptThread = null;
+        }
+
         if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;

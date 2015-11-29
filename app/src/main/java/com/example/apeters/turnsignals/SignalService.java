@@ -15,6 +15,7 @@ public class SignalService extends Service {
     private Signals mSignals;
 
     private GyroscopeSensor mGyroSensor;
+    private AccelSensor mAccelSensor;
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -46,17 +47,34 @@ public class SignalService extends Service {
     }
 
     public void useGyro(){
-        Log.d("SensorService","Starting Gyro");
+        Log.d("SensorService", "Starting Gyro");
         if(mGyroSensor == null){
             mGyroSensor = new GyroscopeSensor(getApplicationContext(), mSignals);
         }
     }
 
     public void disableGyro(){
-        Log.d("SensorService","Stopping Gyro");
+        Log.d("SensorService", "Stopping Gyro");
         if(mGyroSensor != null){
             mGyroSensor.cancel();
             mGyroSensor = null;
+        }
+    }
+
+    public void useAccel() {
+        Log.d("SensorService", "Starting Accel");
+
+        if(mAccelSensor == null) {
+          mAccelSensor = new AccelSensor(getApplicationContext(), mSignals);
+        }
+    }
+
+    public void disableAccel() {
+        Log.d("SensorService", "Stopping Accel");
+
+        if(mAccelSensor != null) {
+            mAccelSensor.cancel();
+            mAccelSensor = null;
         }
     }
 }

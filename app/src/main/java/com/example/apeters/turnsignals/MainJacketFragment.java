@@ -148,18 +148,34 @@ public class MainJacketFragment extends Fragment {
         mGyroSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     mSignalService.useGyro();
                     mLeftButton.setEnabled(false);
                     mLeftButton.setClickable(false);
                     mRightButton.setEnabled(false);
                     mRightButton.setClickable(false);
-                }else{
+                } else {
                     mSignalService.disableGyro();
                     mLeftButton.setEnabled(true);
                     mLeftButton.setClickable(true);
                     mRightButton.setEnabled(true);
                     mRightButton.setClickable(true);
+                }
+            }
+        });
+
+        mAcclSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mSignalService.useAccel();
+                    mBrakeButton.setEnabled(false);
+                    mBrakeButton.setClickable(false);
+                }
+                else {
+                    mSignalService.disableAccel();
+                    mBrakeButton.setEnabled(true);
+                    mBrakeButton.setClickable(true);
                 }
             }
         });
