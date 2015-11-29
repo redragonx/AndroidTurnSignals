@@ -391,8 +391,9 @@ public class MainJacketFragment extends Fragment {
         }
     };
 
-
-
+    /*
+        Service Connection for the SignalsService. Called when the service binds or disconnects
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
