@@ -31,7 +31,6 @@ import android.widget.ToggleButton;
 public class MainJacketFragment extends Fragment {
 
     private static final String TAG = "BluetoothJacketFragment";
-
     /**
      * Name of the connected device
      */
@@ -65,9 +64,6 @@ public class MainJacketFragment extends Fragment {
         setHasOptionsMenu(true);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
-
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             FragmentActivity activity = getActivity();
@@ -86,10 +82,10 @@ public class MainJacketFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mBrakeButton = (ToggleButton) view.findViewById(R.id.BrakeToggle);
         mRightButton = (ToggleButton) view.findViewById(R.id.RightToggle);
         mLeftButton = (ToggleButton) view.findViewById(R.id.LeftToggle);
-
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
         // Bind to LocalService
         Intent intent = new Intent(getActivity(), SignalService.class);
@@ -343,12 +339,11 @@ public class MainJacketFragment extends Fragment {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("Test123456789", "Test");
-            Log.d("Service","Bound");
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            Log.d(TAG,"Bound");
             SignalService.LocalBinder binder = (SignalService.LocalBinder) service;
             mSignals = binder.getSignals();
-            setupButtons();
+            setupButtons(); //Buttons cannot affect the signals before the service is bound.
+                            //Binding should be very quick.
             mSignalService = binder.getService();
             mBound = true;
 

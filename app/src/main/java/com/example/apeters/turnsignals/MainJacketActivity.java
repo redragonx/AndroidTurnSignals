@@ -26,14 +26,9 @@ public class MainJacketActivity extends FragmentActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
-
+        //Start the SignalService to make sure it is running in the background
         Intent intent = new Intent(this, SignalService.class);
         startService(intent);
-
-
-//        Intent intent2 = new Intent(this, SignalService.class);
-//        getApplicationContext().bindService(intent2, mConnection, Context.BIND_AUTO_CREATE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -51,35 +46,10 @@ public class MainJacketActivity extends FragmentActivity{
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
-//    private ServiceConnection mConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName className, IBinder service) {
-//            Log.d("Service","Bound2");
-//            // We've bound to LocalService, cast the IBinder and get LocalService instance
-//
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName arg0) {
-//
-//        }
-//    };
 
 }
