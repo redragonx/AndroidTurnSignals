@@ -73,14 +73,13 @@ public class MainJacketFragment extends Fragment {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
-            FragmentActivity activity = getActivity();
-            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            activity.finish();
+            setStatus(R.string.bt_not_available);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.content_main, container, false);
     }
@@ -122,7 +121,7 @@ public class MainJacketFragment extends Fragment {
             // Only if the state is STATE_NONE, do we know that we haven't started already
             if (mBluetoothServerService.getState() == BluetoothServer.STATE_NONE) {
                 // Start the Bluetooth server for a device to connect.
-                mBluetoothServerService.start();
+                //mBluetoothServerService.start();
             }
         }
     }
@@ -327,7 +326,7 @@ public class MainJacketFragment extends Fragment {
                 } else {
                     // User did not enable Bluetooth or an error occurred
                     Log.d(TAG, "BT not enabled");
-                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
+                    Toast.makeText(getActivity(), R.string.bt_not_enabled,
                             Toast.LENGTH_SHORT).show();
                     getActivity().finish();
                 }
@@ -404,6 +403,9 @@ public class MainJacketFragment extends Fragment {
             setupSignalListener();
             mSignalService = binder.getService();
             mBound = true;
+
+            mBluetoothServerService = mSignals.getBluetoothServerService();
+
 
 
             if (!mBluetoothAdapter.isEnabled()) {
