@@ -44,24 +44,28 @@ public class MainJacketFragment extends Fragment {
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
+    private static String EXTRA_DEVICE_ADDRESS = "device_address";
+
+    private TextView mDeviceStatusTextView;
 
     private ToggleButton mBrakeButton;
     private ToggleButton mLeftButton;
     private ToggleButton mRightButton;
 
     private Switch mGyroSwitch;
-    private Switch mAcclSwitch;
+    private Switch mAccelSwitch;
 
     private Button mConnectButton;
 
     private BluetoothAdapter mBluetoothAdapter = null;
-
     private BluetoothServer mBluetoothServerService = null;
 
     private SignalService mSignalService;
 
     private boolean mBound = false;
 
+
+/* Fragment Lifecycle methods */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("Test","onCreateFragment");
@@ -93,15 +97,55 @@ public class MainJacketFragment extends Fragment {
         mLeftButton = (ToggleButton) view.findViewById(R.id.LeftToggle);
         mConnectButton = (Button) view.findViewById(R.id.connect_button);
         mGyroSwitch = (Switch) view.findViewById(R.id.gyro_switch);
-        mAcclSwitch = (Switch) view.findViewById(R.id.accelerometer_switch);
+        mAccelSwitch = (Switch) view.findViewById(R.id.accelerometer_switch);
+        mDeviceStatusTextView = (TextView) view.findViewById(R.id.txtViewDeviceName);
 
         // Bind to LocalService
         Intent intent = new Intent(getActivity(), SignalService.class);
         getActivity().getApplication().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private void setupButtons(){
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBluetoothServerService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBluetoothServerService.getState() == BluetoothServer.STATE_NONE) {
+                // Start the Bluetooth server for a device to connect.
+                mBluetoothServerService.start();
+            }
+        }
+    }
+
+    @Override
+    public void onPause()  {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+
+/* End Fragment Lifecycle methods */
+
+/* Private Methods */
+
+    //Setup all of the buttons. Called once the service has been bound.
+    private void setupButtons(boolean brakeOn, boolean leftOn, boolean rightOn){
 
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,30 +154,34 @@ public class MainJacketFragment extends Fragment {
             }
         });
 
+
+        mBrakeButton.setChecked(brakeOn);
         mBrakeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mBrakeButton.isChecked()){
+                if (mBrakeButton.isChecked()) {
                     mSignals.setBrakeOn();
-                }else{
+                } else {
                     mSignals.setBrakeOff();
                 }
-                mSignals.outputToDevice();
             }
         });
 
+
+
+        mLeftButton.setChecked(leftOn);
         mLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mLeftButton.isChecked()) {
                     mSignals.setLeftOn();
-                }
-                else {
+                } else {
                     mSignals.setLeftOff();
                 }
             }
         });
 
+        mRightButton.setChecked(rightOn);
         mRightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,90 +212,50 @@ public class MainJacketFragment extends Fragment {
             }
         });
 
-        mAcclSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mAccelSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mSignalService.useAccel();
                     mBrakeButton.setEnabled(false);
                     mBrakeButton.setClickable(false);
-                }
-                else {
+                } else {
                     mSignalService.disableAccel();
                     mBrakeButton.setEnabled(true);
                     mBrakeButton.setClickable(true);
                 }
             }
         });
+
     }
 
+    private void setupSignalListener(){
+        mSignals.setSignalUpdateListener(new Signals.SignalUpdateListener() {
+            @Override
+            public void brakeUpdate(boolean brakeIsOn) {
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //If BT is not on, request that it be enabled.
-        // setupServer() will then be called during onActivityResult
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the server session
-        }
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE_SECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, true);
-                }
-                break;
-            case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, false);
-                }
-                break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a jacket session
-                    setupServer();
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    Log.d(TAG, "BT not enabled");
-                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
-                            Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onPause()  {
-        super.onPause();
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mBluetoothServerService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mBluetoothServerService.getState() == BluetoothServer.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mBluetoothServerService.start();
             }
-        }
+
+            @Override
+            public void leftUpdate(boolean leftIsOn) {
+                mLeftButton.setChecked(leftIsOn);
+            }
+
+            @Override
+            public void rightUpdate(boolean rightIsOn) {
+                mRightButton.setChecked(rightIsOn);
+            }
+
+            @Override
+            public void leftSignalUpdate(boolean leftSignalIsOn) {
+
+            }
+
+            @Override
+            public void rightSignalUpdate(boolean rightSignal) {
+
+            }
+        });
     }
 
     private void setupServer() {
@@ -269,40 +277,68 @@ public class MainJacketFragment extends Fragment {
      * @param resId a string resource ID
      */
     private void setStatus(int resId) {
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(resId);
-        TextView txtViewDeviceName = (TextView)activity.findViewById(R.id.txtViewDeviceName);
-        txtViewDeviceName.setText(resId);
+        mDeviceStatusTextView.setText(resId);
     }
 
     /**
-     * Updates the status on the action bar.
+     * Updates the status to the title text
      *
      * @param subTitle status
      */
     private void setStatus(CharSequence subTitle) {
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(subTitle);
-        TextView txtViewDeviceName = (TextView)activity.findViewById(R.id.txtViewDeviceName);
-        txtViewDeviceName.setText(subTitle);
+        mDeviceStatusTextView.setText(subTitle);
     }
 
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * Establish connection with other device
+     *
+     * @param data   An {@link Intent} with EXTRA_DEVICE_ADDRESS extra.
+     * @param secure Socket Security type - Secure (true) , Insecure (false)
+     */
+    private void connectDevice(Intent data, boolean secure) {
+        // Get the device MAC address
+        String address = data.getExtras().getString(EXTRA_DEVICE_ADDRESS);
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        mBluetoothServerService.connect(device, secure);
+    }
+
+/* End Private Methods */
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE_SECURE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    setStatus(R.string.title_connecting);
+                    connectDevice(data, true);
+                }
+                break;
+            case REQUEST_CONNECT_DEVICE_INSECURE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    setStatus(R.string.title_connecting);
+                    connectDevice(data, false);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a jacket session
+                    //setupServer();   //Testing. Would Rather only use if button is pressed.
+                } else {
+                    // User did not enable Bluetooth or an error occurred
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
+                            Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                }
+        }
+    }
+
+
+    /**
+     * The Handler that gets information back from the BluetoothServer
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -315,8 +351,6 @@ public class MainJacketFragment extends Fragment {
                             if(activity != null) {
                                 setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                                 mSignals.setBluetoothServerService(mBluetoothServerService);
-                                //mSignals = new Signals(mBluetoothServerService);
-
                         }
                             break;
                         case BluetoothServer.STATE_CONNECTING:
@@ -357,33 +391,19 @@ public class MainJacketFragment extends Fragment {
         }
     };
 
-    /**
-     * Establish connection with other device
-     *
-     * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
-     * @param secure Socket Security type - Secure (true) , Insecure (false)
+    /*
+        Service Connection for the SignalsService. Called when the service binds or disconnects
      */
-    private void connectDevice(Intent data, boolean secure) {
-        // Get the device MAC address
-        String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
-        mBluetoothServerService.connect(device, secure);
-    }
-
     private ServiceConnection mConnection = new ServiceConnection() {
-
-
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.d(TAG,"Bound");
             SignalService.LocalBinder binder = (SignalService.LocalBinder) service;
             mSignals = binder.getSignals();
-            setupButtons(); //Buttons cannot affect the signals before the service is bound.
-                            //Binding should be very quick.
+            //Buttons cannot affect the signals before the service is bound.
+            setupButtons(mSignals.isBrakeOn(),mSignals.isLeftOn(), mSignals.isRightOn());
+            setupSignalListener();
             mSignalService = binder.getService();
             mBound = true;
 
@@ -395,6 +415,8 @@ public class MainJacketFragment extends Fragment {
             } else if (mSignals.getBluetoothServerService() == null) {
                 setupServer();
             }
+
+
 
         }
 
