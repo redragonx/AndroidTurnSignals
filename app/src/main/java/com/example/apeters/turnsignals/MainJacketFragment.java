@@ -44,6 +44,7 @@ public class MainJacketFragment extends Fragment {
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
+    private static String EXTRA_DEVICE_ADDRESS = "device_address";
 
     private TextView mDeviceStatusTextView;
 
@@ -291,13 +292,12 @@ public class MainJacketFragment extends Fragment {
     /**
      * Establish connection with other device
      *
-     * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
+     * @param data   An {@link Intent} with EXTRA_DEVICE_ADDRESS extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     private void connectDevice(Intent data, boolean secure) {
         // Get the device MAC address
-        String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        String address = data.getExtras().getString(EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
@@ -310,12 +310,14 @@ public class MainJacketFragment extends Fragment {
             case REQUEST_CONNECT_DEVICE_SECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
+                    setStatus(R.string.title_connecting);
                     connectDevice(data, true);
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
+                    setStatus(R.string.title_connecting);
                     connectDevice(data, false);
                 }
                 break;
@@ -333,8 +335,6 @@ public class MainJacketFragment extends Fragment {
                 }
         }
     }
-
-
 
 
     /**
@@ -415,6 +415,8 @@ public class MainJacketFragment extends Fragment {
             } else if (mSignals.getBluetoothServerService() == null) {
                 setupServer();
             }
+
+
 
         }
 
