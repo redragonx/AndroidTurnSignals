@@ -148,6 +148,7 @@ public class MainJacketFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ensureDiscoverable();
+                setupServer();
             }
         });
 
@@ -256,7 +257,9 @@ public class MainJacketFragment extends Fragment {
     }
 
     private void setupServer() {
+        Log.d(TAG, "setupServer");
         mBluetoothServerService = new BluetoothServer(getActivity(), mHandler);
+        mBluetoothServerService.start();
     }
 
     private void ensureDiscoverable() {
@@ -413,7 +416,8 @@ public class MainJacketFragment extends Fragment {
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
                 // Otherwise, setup the server session
             } else if (mSignals.getBluetoothServerService() == null) {
-                setupServer();
+                setStatus(R.string.title_not_connected);
+                //setupServer();
             }
 
 
