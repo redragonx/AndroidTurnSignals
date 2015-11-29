@@ -29,14 +29,6 @@ public class Signals {
         this(server, false, false, false);
     }
 
-    public void setBluetoothServerService(BluetoothServer server){
-        mBluetoothServerService = server;
-    }
-
-    public BluetoothServer getBluetoothServerService(){
-        return mBluetoothServerService;
-    }
-
     public Signals(BluetoothServer server, boolean brakeOn, boolean leftOn, boolean rightOn){
         this.mBluetoothServerService = server;
         this.mBrakeOn = brakeOn;
@@ -49,16 +41,26 @@ public class Signals {
         }
     }
 
-    public boolean getTimerRunning() {
-        return mTimerRunning;
+    public void setBluetoothServerService(BluetoothServer server){
+        mBluetoothServerService = server;
+    }
+
+    public BluetoothServer getBluetoothServerService(){
+        return mBluetoothServerService;
     }
 
     public void setBrakeOn(){
         mBrakeOn = true;
+        outputToDevice();
     }
 
     public void setBrakeOff(){
         mBrakeOn = false;
+        outputToDevice();
+    }
+
+    public boolean isBrakeOn(){
+        return mBrakeOn;
     }
 
     public void setRightOn(){
@@ -75,6 +77,11 @@ public class Signals {
         outputToDevice();
     }
 
+    public boolean isRightOn(){
+        return mRightOn;
+    }
+
+    //Return the current lit state
     public boolean getRightSignal(){
         return mRightOn && flash;
     }
@@ -93,6 +100,11 @@ public class Signals {
         outputToDevice();
     }
 
+    public boolean isLeftOn(){
+        return mLeftOn;
+    }
+
+    //Return the current lit state
     public boolean getLeftSignal(){
         return mLeftOn && flash;
     }
