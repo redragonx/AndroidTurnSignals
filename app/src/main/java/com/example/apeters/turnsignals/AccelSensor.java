@@ -21,9 +21,11 @@ public class AccelSensor implements SensorEventListener {
     private Sensor mSensor;
     private Signals mSignals;
 
-    private float ax, ay, az;
+    private float ax, ay, az, lastSpeed;
 
     public AccelSensor(Context context, Signals signals) throws Exception {
+        lastSpeed = 0;
+
         mSignals = signals;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         // If you do not have a phone with TYPE_LINEAR_ACCELERATION, you are stuck with TYPE_ACCELERATION,
@@ -52,7 +54,7 @@ public class AccelSensor implements SensorEventListener {
             throw new Exception("no accel hardware!");
         }
 
-        Log.d(TAG, "hardware linear acceleration meter found");
+        Log.d(TAG, "version 1 linear acceleration meter found");
 
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -70,6 +72,23 @@ public class AccelSensor implements SensorEventListener {
             Log.d(TAG, "Version 3 accel: " + "x: " + ax + " y: " + ay + " z: " + az);
         } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // apply low pass?
+
+            ax = event.values[0] / 10;
+            ay = event.values[1] / 10;
+            az = event.values[2] / 10 ;
+
+            float speed = Math.abs( ax + ay + az);
+
+
+            if(speed > lastSpeed) {
+                mSignals.setBrakeOff();
+                lastSpeed = speed;
+            }
+            else {
+                mSignals.setBrakeOn();
+            }
+
+            Log.d(TAG, "Version 1 accel: " + "x: " + ax + " y: " + ay + " z: " + az + "speed: " + speed + "lastSpeed:" + lastSpeed);
         }
     }
 
