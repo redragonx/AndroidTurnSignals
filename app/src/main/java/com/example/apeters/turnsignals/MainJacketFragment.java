@@ -116,16 +116,6 @@ public class MainJacketFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mBluetoothServerService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mBluetoothServerService.getState() == BluetoothServer.STATE_NONE) {
-                // Start the Bluetooth server for a device to connect.
-                //mBluetoothServerService.start();
-            }
-        }
         if(mSignals != null) {
             setupSignalListener();
         }
@@ -133,9 +123,10 @@ public class MainJacketFragment extends Fragment {
 
     @Override
     public void onPause()  {
-        mSignals.removeSignalUpdateListener();
+        if(mSignals != null) {
+            mSignals.removeSignalUpdateListener();
+        }
         super.onPause();
-
     }
 
     @Override
@@ -154,7 +145,7 @@ public class MainJacketFragment extends Fragment {
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ensureDiscoverable();
+                //ensureDiscoverable();
                 setupServer();
             }
         });
@@ -295,7 +286,7 @@ public class MainJacketFragment extends Fragment {
             }
         });
     }
-
+    //create new server and start listening for connections
     private void setupServer() {
         Log.d(TAG, "setupServer");
         mBluetoothServerService = new BluetoothServer(getActivity(), mHandler);
@@ -312,17 +303,15 @@ public class MainJacketFragment extends Fragment {
     }
 
     /**
-     * Updates the status on the action bar.
-     *
-     * @param resId a string resource ID
+     * Updates the status in the device status text
+     * @param resId a string resource ID for status message
      */
     private void setStatus(int resId) {
         mDeviceStatusTextView.setText(resId);
     }
 
     /**
-     * Updates the status to the title text
-     *
+     * Updates the status to in the device status text
      * @param subTitle status
      */
     private void setStatus(CharSequence subTitle) {
@@ -331,7 +320,6 @@ public class MainJacketFragment extends Fragment {
 
     /**
      * Establish connection with other device
-     *
      * @param data   An {@link Intent} with EXTRA_DEVICE_ADDRESS extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
@@ -422,7 +410,7 @@ public class MainJacketFragment extends Fragment {
     };
 
     /*
-        Service Connection for the SignalsService. Called when the service binds or disconnects
+     *  Service Connection for the SignalsService. Called when the service binds
      */
     private ServiceConnection mConnection = new ServiceConnection() {
 
