@@ -39,17 +39,7 @@ public class AccelSensor implements SensorEventListener {
             mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
             return;
         }
-        List<Sensor> accelSensors = mSensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
-        for (int i = 0; i < accelSensors.size(); i++) {
-            if ((accelSensors.get(i).getVendor().contains("Google Inc.")) &&
-                    (accelSensors.get(i).getVersion() == 3)) {
-                // Use the version 3 accelerometer sensor.
-                mSensor = accelSensors.get(i);
-                mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                Log.d(TAG, "Version 3 linear acceleration meter found");
-                return;
-            }
-        }
+
 
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 

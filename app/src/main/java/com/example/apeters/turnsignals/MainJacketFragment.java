@@ -133,7 +133,9 @@ public class MainJacketFragment extends Fragment {
 
     @Override
     public void onPause()  {
-        mSignals.removeSignalUpdateListener();
+        if(mSignals != null) {
+            mSignals.removeSignalUpdateListener();
+        }
         super.onPause();
 
     }
