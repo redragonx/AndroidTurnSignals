@@ -1,6 +1,8 @@
 package com.example.apeters.turnsignals;
 
-import com.example.apeters.turnsignals.logger.Log;
+
+
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
