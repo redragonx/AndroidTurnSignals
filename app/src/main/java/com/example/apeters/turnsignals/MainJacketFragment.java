@@ -214,7 +214,11 @@ public class MainJacketFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mSignalService.useAccel();
+                    try {
+                        mSignalService.useAccel();
+                    } catch (Exception e) {
+                        getActivity().finish();
+                    }
                     mBrakeButton.setEnabled(false);
                     mBrakeButton.setClickable(false);
                 } else {
@@ -305,6 +309,7 @@ public class MainJacketFragment extends Fragment {
     }
 
 /* End Private Methods */
+<<<<<<< HEAD
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
@@ -336,6 +341,8 @@ public class MainJacketFragment extends Fragment {
         }
     }
 
+=======
+>>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
 
     /**
      * The Handler that gets information back from the BluetoothServer

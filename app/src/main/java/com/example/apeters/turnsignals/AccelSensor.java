@@ -8,7 +8,10 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.Toast;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
 
 import java.util.List;
 
@@ -25,37 +28,36 @@ public class AccelSensor implements SensorEventListener {
 
     private float ax, ay, az;
 
-    public AccelSensor(Context context, Signals signals) {
+    public AccelSensor(Context context, Signals signals) throws Exception {
         mSignals = signals;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         // If you do not have a phone with TYPE_LINEAR_ACCELERATION, you are stuck with TYPE_ACCELERATION,
         // which cannot separate gravity (tilt) from linear acceleration.
 
-        if (mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
-            List<Sensor> accelSensors = mSensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
-            for(int i=0; i < accelSensors.size(); i++) {
-                if ((accelSensors.get(i).getVendor().contains("Google Inc.")) &&
-                        (accelSensors.get(i).getVersion() == 3)){
-                    // Use the version 3 accelerometer sensor.
-                    mSensor = accelSensors.get(i);
-                    break;
-                }
+        Log.d(TAG, "BLAH 1");
+        List<Sensor> accelSensors = mSensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
+        for (int i = 0; i < accelSensors.size(); i++) {
+            if ((accelSensors.get(i).getVendor().contains("Google Inc.")) &&
+                    (accelSensors.get(i).getVersion() == 3)) {
+                // Use the version 3 accelerometer sensor.
+                mSensor = accelSensors.get(i);
+                mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                Log.d(TAG, "Version 3 linear acceleration meter found");
+                return;
             }
-            Log.d(TAG, "Version 3 linear acceleration meter found");
         }
-        else {
-            // Use the accelerometer.
-            if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
-                mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-                Log.d(TAG, "hardware linear acceleration meter found");
-            }else{
-                // Sorry, there are no accelerometers on your device.
-                // You can't use this app.
-                Toast.makeText(context, "No accel!", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "no Accel hardware");
-            }
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if (mSensor == null) {
+            // Sorry, there are no accelerometers on your device.
+            // You can't use this app.
+            Toast.makeText(context, "No accel!", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "no Accel hardware");
+            throw new Exception("no accel hardware!");
         }
+
+        Log.d(TAG, "hardware linear acceleration meter found");
 
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -70,9 +72,8 @@ public class AccelSensor implements SensorEventListener {
             ay = event.values[1];
             az = event.values[2];
 
-            Log.d(TAG, "Version 3 accel: " + "x: " + ax + " y: "+ ay + " z: " + az);
-        }
-        else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            Log.d(TAG, "Version 3 accel: " + "x: " + ax + " y: " + ay + " z: " + az);
+        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // apply low pass?
         }
     }

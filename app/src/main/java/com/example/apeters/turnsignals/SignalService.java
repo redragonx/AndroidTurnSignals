@@ -61,7 +61,7 @@ public class SignalService extends Service {
         }
     }
 
-    public void useAccel() {
+    public void useAccel() throws Exception {
         Log.d("SensorService", "Starting Accel");
 
         if(mAccelSensor == null) {
