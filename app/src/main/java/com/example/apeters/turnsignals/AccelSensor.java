@@ -75,17 +75,18 @@ public class AccelSensor implements SensorEventListener {
 
             ax = event.values[0] / 10;
             ay = event.values[1] / 10;
-            az = event.values[2] / 10 ;
+            az = event.values[2]  / 10;
 
             float speed = Math.abs( ax + ay + az);
 
 
-            if(speed > lastSpeed) {
+            if(speed > lastSpeed * 1.5) {
                 mSignals.setBrakeOff();
                 lastSpeed = speed;
             }
             else {
                 mSignals.setBrakeOn();
+                lastSpeed = speed;
             }
 
             Log.d(TAG, "Version 1 accel: " + "x: " + ax + " y: " + ay + " z: " + az + "speed: " + speed + "lastSpeed:" + lastSpeed);
