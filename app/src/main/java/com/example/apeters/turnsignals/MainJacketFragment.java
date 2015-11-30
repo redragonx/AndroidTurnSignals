@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -30,6 +31,7 @@ import android.widget.ToggleButton;
  */
 
 public class MainJacketFragment extends Fragment {
+
     private static final String TAG = "BluetoothJacketFragment";
     /**
      * Name of the connected device
@@ -124,11 +126,16 @@ public class MainJacketFragment extends Fragment {
                 //mBluetoothServerService.start();
             }
         }
+        if(mSignals != null) {
+            setupSignalListener();
+        }
     }
 
     @Override
     public void onPause()  {
+        mSignals.removeSignalUpdateListener();
         super.onPause();
+
     }
 
     @Override
@@ -235,7 +242,17 @@ public class MainJacketFragment extends Fragment {
         mSignals.setSignalUpdateListener(new Signals.SignalUpdateListener() {
             @Override
             public void brakeUpdate(boolean brakeIsOn) {
-
+                final boolean brakeOn = brakeIsOn;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (brakeOn) {
+                            mBrakeButton.setTextColor(Color.RED);
+                        } else {
+                            mBrakeButton.setTextColor(Color.BLACK);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -250,12 +267,32 @@ public class MainJacketFragment extends Fragment {
 
             @Override
             public void leftSignalUpdate(boolean leftSignalIsOn) {
-
+                final boolean leftSignalOn = leftSignalIsOn;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(leftSignalOn) {
+                            mLeftButton.setTextColor(Color.YELLOW);
+                        }else{
+                            mLeftButton.setTextColor(Color.BLACK);
+                        }
+                    }
+                });
             }
 
             @Override
             public void rightSignalUpdate(boolean rightSignal) {
-
+                final boolean RightSignalOn = rightSignal;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(RightSignalOn) {
+                            mRightButton.setTextColor(Color.YELLOW);
+                        }else{
+                            mRightButton.setTextColor(Color.BLACK);
+                        }
+                    }
+                });
             }
         });
     }
@@ -372,25 +409,14 @@ public class MainJacketFragment extends Fragment {
                     }
                     break;
                 case Constants.MESSAGE_WRITE:
-
                     break;
                 case Constants.MESSAGE_READ:
-
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    if (null != activity) {
-                        Toast.makeText(activity, "Connected to "
-                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                        setStatus(mConnectedDeviceName);
-                    }
+                    mSignals.setDeviceName(mConnectedDeviceName);
                     break;
                 case Constants.MESSAGE_TOAST:
-                    if (null != activity) {
-                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_SHORT).show();
-                    }
                     break;
             }
         }
@@ -406,20 +432,38 @@ public class MainJacketFragment extends Fragment {
             Log.d(TAG,"Bound");
             SignalService.LocalBinder binder = (SignalService.LocalBinder) service;
             mSignals = binder.getSignals();
+            mConnectedDeviceName = mSignals.getDeviceName();
             //Buttons cannot affect the signals before the service is bound.
-            setupButtons(mSignals.isBrakeOn(),mSignals.isLeftOn(), mSignals.isRightOn());
+            setupButtons(mSignals.isBrakeOn(), mSignals.isLeftOn(), mSignals.isRightOn());
             setupSignalListener();
             mSignalService = binder.getService();
             mBound = true;
 
-            mBluetoothServerService = mSignals.getBluetoothServerService();
+            if(mSignals.getBluetoothServerService() != null) {
+                Log.d(TAG,"State: "+mSignals.getBluetoothServerService().getState());
+                switch (mSignals.getBluetoothServerService().getState()) {
+                    case BluetoothServer.STATE_CONNECTED:
+                        setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                        break;
+                    case BluetoothServer.STATE_LISTEN:
+                        setStatus(R.string.title_listening);
+                        break;
+                    case BluetoothServer.STATE_CONNECTING:
+                        setStatus(R.string.title_connecting);
+                        break;
+                    default:
+                        setStatus(R.string.title_not_connected);
+                }
+            }else{
+                setStatus(R.string.title_not_connected);
+            }
 
 
 
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-                // Otherwise, setup the server session
+                setStatus(R.string.bt_not_enabled);
             } else if (mSignals.getBluetoothServerService() == null) {
                 setStatus(R.string.title_not_connected);
                 //setupServer();
