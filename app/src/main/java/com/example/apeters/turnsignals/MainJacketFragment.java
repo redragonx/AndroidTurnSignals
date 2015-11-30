@@ -241,12 +241,12 @@ public class MainJacketFragment extends Fragment {
     private void setupSignalListener(){
         mSignals.setSignalUpdateListener(new Signals.SignalUpdateListener() {
             @Override
-            public void brakeUpdate(boolean brakeIsOn) {
-                final boolean brakeOn = brakeIsOn;
+            public void brakeUpdate(final boolean brakeIsOn) {
+                mBrakeButton.setChecked(brakeIsOn);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (brakeOn) {
+                        if (brakeIsOn) {
                             mBrakeButton.setTextColor(Color.RED);
                         } else {
                             mBrakeButton.setTextColor(Color.BLACK);
@@ -266,12 +266,11 @@ public class MainJacketFragment extends Fragment {
             }
 
             @Override
-            public void leftSignalUpdate(boolean leftSignalIsOn) {
-                final boolean leftSignalOn = leftSignalIsOn;
+            public void leftSignalUpdate(final boolean leftSignalIsOn) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(leftSignalOn) {
+                        if(leftSignalIsOn) {
                             mLeftButton.setTextColor(Color.YELLOW);
                         }else{
                             mLeftButton.setTextColor(Color.BLACK);
@@ -281,12 +280,12 @@ public class MainJacketFragment extends Fragment {
             }
 
             @Override
-            public void rightSignalUpdate(boolean rightSignal) {
-                final boolean RightSignalOn = rightSignal;
+            public void rightSignalUpdate(final boolean rightSignalIsOn) {
+
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(RightSignalOn) {
+                        if(rightSignalIsOn) {
                             mRightButton.setTextColor(Color.YELLOW);
                         }else{
                             mRightButton.setTextColor(Color.BLACK);

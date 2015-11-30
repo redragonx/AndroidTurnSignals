@@ -32,6 +32,13 @@ public class AccelSensor implements SensorEventListener {
         // which cannot separate gravity (tilt) from linear acceleration.
 
         Log.d(TAG, "BLAH 1");
+
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        if(mSensor != null){
+            Log.d(TAG, "Got Linear Accelerometer");
+            mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            return;
+        }
         List<Sensor> accelSensors = mSensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
         for (int i = 0; i < accelSensors.size(); i++) {
             if ((accelSensors.get(i).getVendor().contains("Google Inc.")) &&
@@ -69,27 +76,39 @@ public class AccelSensor implements SensorEventListener {
             ay = event.values[1];
             az = event.values[2];
 
-            Log.d(TAG, "Version 3 accel: " + "x: " + ax + " y: " + ay + " z: " + az);
+            if(ay < -1){
+                mSignals.setBrakeOff();
+            }else if(ay > 1){
+                mSignals.setBrakeOn();
+            }
+
+            Log.d(TAG, "Version 3 accel: " + " y: " + ay );
         } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // apply low pass?
 
-            ax = event.values[0] / 10;
-            ay = event.values[1] / 10;
-            az = event.values[2]  / 10;
+            ax = event.values[0];
+            ay = event.values[1];
+            az = event.values[2];
 
-            float speed = Math.abs( ax + ay + az);
-
-
-            if(speed > lastSpeed * 1.5) {
-                mSignals.setBrakeOff();
-                lastSpeed = speed;
-            }
-            else {
+            if(ay < -.1){
                 mSignals.setBrakeOn();
-                lastSpeed = speed;
+            }else if(ay > .1){
+                mSignals.setBrakeOff();
             }
 
-            Log.d(TAG, "Version 1 accel: " + "x: " + ax + " y: " + ay + " z: " + az + "speed: " + speed + "lastSpeed:" + lastSpeed);
+//            float speed = Math.abs( ax + ay + az);
+//
+//
+//            if(speed >= lastSpeed + 0.5) {
+//                mSignals.setBrakeOff();
+//                lastSpeed = speed;
+//            }
+//            else {
+//                mSignals.setBrakeOn();
+//                lastSpeed = speed;
+//            }
+
+            Log.d(TAG, "Version 1 accel: " + "x: " + ax + " y: " + ay + " z: " + az);
         }
     }
 
