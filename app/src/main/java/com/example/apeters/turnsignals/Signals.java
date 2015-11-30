@@ -18,6 +18,7 @@ public class Signals {
     private BluetoothServer mBluetoothServerService;
     private boolean mTimerRunning;
     private SignalUpdateListener mSignalUpdateListener;
+    private String mDeviceName;
 
     private boolean mFlash = false; //Set by timers on when the first signal is set. Both signals
                                     //reference this master flasher
@@ -47,6 +48,13 @@ public class Signals {
 
     public BluetoothServer getBluetoothServerService(){
         return mBluetoothServerService;
+    }
+
+    public void setDeviceName(String name){
+        mDeviceName = name;
+    }
+    public String getDeviceName(){
+        return mDeviceName;
     }
 
     public void setBrakeOn(){
@@ -131,7 +139,6 @@ public class Signals {
     private class FlashTimer extends TimerTask {
         @Override
         public void run() {
-            Log.d("Timer", "TimerRun");
             int time = mFlash ? mOffTime : mOnTime;
             mFlash = !mFlash;
             outputToDevice();
@@ -159,7 +166,6 @@ public class Signals {
             return;
         }
         String blinkerOutputString = blinkerString();
-        Log.d("timer", "Blinker: " + blinkerOutputString);
         mBluetoothServerService.write(blinkerOutputString.getBytes());
     }
 
@@ -176,6 +182,10 @@ public class Signals {
 
     public void setSignalUpdateListener(SignalUpdateListener listener){
         this.mSignalUpdateListener = listener;
+    }
+
+    public void removeSignalUpdateListener(){
+        this.mSignalUpdateListener = null;
     }
 
     private void updateBrake(){
