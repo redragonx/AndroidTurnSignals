@@ -214,7 +214,11 @@ public class MainJacketFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mSignalService.useAccel();
+                    try {
+                        mSignalService.useAccel();
+                    } catch (Exception e) {
+                        getActivity().finish();
+                    }
                     mBrakeButton.setEnabled(false);
                     mBrakeButton.setClickable(false);
                 } else {
@@ -303,37 +307,6 @@ public class MainJacketFragment extends Fragment {
     }
 
 /* End Private Methods */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE_SECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    setStatus(R.string.title_connecting);
-                    connectDevice(data, true);
-                }
-                break;
-            case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    setStatus(R.string.title_connecting);
-                    connectDevice(data, false);
-                }
-                break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    Log.d(TAG,"Bluetooth Enabled");
-                    //Bluetooth is now enabled, so set up a jacket session
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    Log.d(TAG, "BT not enabled");
-                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
-                            Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-        }
-    }
-
 
     /**
      * The Handler that gets information back from the BluetoothServer

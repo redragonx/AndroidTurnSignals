@@ -1,6 +1,6 @@
 package com.example.apeters.turnsignals;
 
-import com.example.apeters.turnsignals.logger.Log;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -125,7 +125,7 @@ public class Signals {
         mTimerRunning = true;
         mFlashTimer = new Timer();
         mFlash = true;
-        mFlashTimer.schedule(new FlashTimer(),mOnTime);
+        mFlashTimer.schedule(new FlashTimer(), mOnTime);
     }
 
     private class FlashTimer extends TimerTask {
