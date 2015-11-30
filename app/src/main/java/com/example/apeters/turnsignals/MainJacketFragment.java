@@ -308,8 +308,7 @@ public class MainJacketFragment extends Fragment {
         mBluetoothServerService.connect(device, secure);
     }
 
-/* End Private Methods */
-<<<<<<< HEAD
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
@@ -341,8 +340,7 @@ public class MainJacketFragment extends Fragment {
         }
     }
 
-=======
->>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
+
 
     /**
      * The Handler that gets information back from the BluetoothServer

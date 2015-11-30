@@ -8,11 +8,6 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.Toast;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
-
 import java.util.List;
 
 /**

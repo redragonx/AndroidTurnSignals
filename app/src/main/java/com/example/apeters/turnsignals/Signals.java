@@ -1,10 +1,5 @@
 package com.example.apeters.turnsignals;
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
 import android.util.Log;
 
 import java.util.Timer;

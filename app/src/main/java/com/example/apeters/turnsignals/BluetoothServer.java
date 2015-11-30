@@ -13,10 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-<<<<<<< HEAD
 
-=======
->>>>>>> a2c42fb19eab024eff71ddfabfa54debdecb53fc
 
 import java.io.IOException;
 import java.io.InputStream;
