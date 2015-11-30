@@ -23,8 +23,9 @@ public class SignalService extends Service {
     private boolean mUsingAccelerometer;
 
     private final IBinder mBinder = new LocalBinder();
-
-    //Binder to pass references to this object and the signals object to the activity it is bound to
+    /**
+     * Binder to pass references to this object and the signals object to the activity it is bound to
+     */
     public class LocalBinder extends Binder {
         SignalService getService() {
             return SignalService.this;
@@ -34,7 +35,11 @@ public class SignalService extends Service {
         }
     }
 
-    //Start activity to create the signals originally. TODO: read close intent
+    /**
+     * Start activity to create the signals originally.
+     * TODO: read close intent
+     * @return  Service restart method.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Log.d("Service","Started");
@@ -45,8 +50,10 @@ public class SignalService extends Service {
         return Service.START_NOT_STICKY;
     }
 
-
-    //Return for bindService();
+    /**
+     * Return for bindService();
+     * @return  IBinder with methods to get this object and signals.
+     */
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -54,7 +61,9 @@ public class SignalService extends Service {
         return mBinder;
     }
 
-    //Enable the Gyroscope for the turn Signals
+    /**
+     * Enable the Gyroscope for the turn Signals
+     */
     public void useGyro(){
         Log.d("SensorService", "Starting Gyro");
         mUsingGyroscope = true;
@@ -63,7 +72,9 @@ public class SignalService extends Service {
         }
     }
 
-    //Disable the gyroscope and allow the gyroscopeSensor class to cancel update requests.
+    /**
+     * Disable the gyroscope and allow the gyroscopeSensor class to cancel update requests.
+     */
     public void disableGyro(){
         Log.d("SensorService", "Stopping Gyro");
         mUsingGyroscope = false;
@@ -73,7 +84,9 @@ public class SignalService extends Service {
         }
     }
 
-    //Enable the accelerometer for the brake
+    /**
+     * Enable the accelerometer for the brake
+     */
     public void useAccel() throws Exception {
         Log.d("SensorService", "Starting Accel");
         mUsingAccelerometer = true;
@@ -81,7 +94,10 @@ public class SignalService extends Service {
           mAccelSensor = new AccelSensor(getApplicationContext(), mSignals);
         }
     }
-    //Disable the accelerometer and allow the AccelSensor object to cancel update requests.
+
+    /**
+     * Disable the accelerometer and allow the AccelSensor object to cancel update requests.
+     */
     public void disableAccel() {
         Log.d("SensorService", "Stopping Accel");
         mUsingAccelerometer = false;
